@@ -14,20 +14,15 @@ public class CardsApiTest extends AbstractApiTest {
     String endpointWithId = "https://api.trello.com/1/cards/{id}";
     CardEntity card;
 
-    @org.testng.annotations.Test(priority = 1)
+    @org.testng.annotations.Test
     public void addNewCard() {
         String CardName = "New API Card";
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addQueryParam("idList", idList)
-            .addQueryParam("name", CardName)
-            .setContentType(ContentType.JSON)
-            .build();
 
         card = given()
             .spec(reqSpec)
             .when()
+            .queryParam("idList", idList)
+            .queryParam("name", CardName)
             .post(endpoint)
             .then()
             .body("name", startsWith("New API Card"))
@@ -36,20 +31,16 @@ public class CardsApiTest extends AbstractApiTest {
             .extract().body().as(CardEntity.class);
     }
 
-    @org.testng.annotations.Test(priority = 2)
+    @org.testng.annotations.Test
     public void editCard() {
+        addNewCard();
         String newCardName = "{\"name\":\"New name for card\"}";
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", card.id())
-            .setBody(newCardName)
-            .setContentType(ContentType.JSON)
-            .build();
 
         card = given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", card.id())
+            .body(newCardName)
             .put(endpointWithId)
             .then()
             .body("name", startsWith("New name for card"))
@@ -58,38 +49,29 @@ public class CardsApiTest extends AbstractApiTest {
             .extract().body().as(CardEntity.class);
     }
 
-    @org.testng.annotations.Test(priority = 3)
+    @org.testng.annotations.Test()
     public void getInfoAboutCard() {
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", card.id())
-            .setContentType(ContentType.JSON)
-            .build();
+        addNewCard();
 
         card = given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", card.id())
             .get(endpointWithId)
             .then()
             .spec(respSpec)
-            .body("name", startsWith("New name for card"))
+            .body("name", startsWith("New API Card"))
             .log().all()
             .extract().body().as(CardEntity.class);
     }
 
-    @org.testng.annotations.Test(priority = 4)
+    @org.testng.annotations.Test()
     public void deleteCard() {
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", card.id())
-            .setContentType(ContentType.JSON)
-            .build();
+        addNewCard();
 
         given()
             .spec(reqSpec)
-            .when()
+            .when().pathParam("id", card.id())
             .delete(endpointWithId)
             .then()
             .log().all()

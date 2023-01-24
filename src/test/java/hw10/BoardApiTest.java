@@ -16,16 +16,10 @@ public class BoardApiTest extends AbstractApiTest {
     @org.testng.annotations.Test(priority = 1)
     public void addNewBoard() {
         String boardName = "New API Board";
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addQueryParam("name", boardName)
-            .setContentType(ContentType.JSON)
-            .build();
 
         board = given()
             .spec(reqSpec)
-            .when()
+            .when().queryParam("name", boardName)
             .post(endpoint)
             .then()
             .body("name", startsWith("New API Board"))
@@ -38,17 +32,12 @@ public class BoardApiTest extends AbstractApiTest {
     @org.testng.annotations.Test(priority = 2)
     public void editBoard() {
         String newInfoForBoard = "{\"desc\":\"New description in the of board\"}";
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", board.id())
-            .setBody(newInfoForBoard)
-            .setContentType(ContentType.JSON)
-            .build();
 
         board = given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", board.id())
+            .body(newInfoForBoard)
             .put(endpointWithID)
             .then()
             .body("desc", startsWith("New description in the of board"))
@@ -59,16 +48,11 @@ public class BoardApiTest extends AbstractApiTest {
 
     @org.testng.annotations.Test(priority = 3)
     public void getInfoAboutBoard() {
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", board.id())
-            .setContentType(ContentType.JSON)
-            .build();
 
         board = given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", board.id())
             .get(endpointWithID)
             .then()
             .spec(respSpec)
@@ -79,16 +63,11 @@ public class BoardApiTest extends AbstractApiTest {
 
     @org.testng.annotations.Test(priority = 4)
     public void deleteBoard() {
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", board.id())
-            .setContentType(ContentType.JSON)
-            .build();
 
         given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", board.id())
             .delete(endpointWithID)
             .then()
             .log().all()

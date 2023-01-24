@@ -14,21 +14,15 @@ public class CheckListTest extends AbstractApiTest{
     String endpointWithId = "https://api.trello.com/1/checklists/{id}";
     CheckListEntity checkList;
 
-    @org.testng.annotations.Test(priority = 1)
+    @org.testng.annotations.Test
     public void addNewCheckList() {
-        //https://api.trello.com/1/checklists?idCard=&key=APIKey&token=APIToken
         String checkListName = "New API check-list";
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addQueryParam("idCard", idCard)
-            .addQueryParam("name", checkListName)
-            .setContentType(ContentType.JSON)
-            .build();
 
         checkList = given()
             .spec(reqSpec)
             .when()
+            .queryParam("idCard", idCard)
+            .queryParam("name", checkListName)
             .post(endpoint)
             .then()
             .body("name", startsWith("New API check-list"))
@@ -37,18 +31,14 @@ public class CheckListTest extends AbstractApiTest{
             .extract().body().as(CheckListEntity.class);;
     }
 
-    @org.testng.annotations.Test(priority = 2)
+    @org.testng.annotations.Test
     public void deleteCheckList() {
-        reqSpec = new RequestSpecBuilder()
-            .addQueryParam("key", apiKey)
-            .addQueryParam("token", apiToken)
-            .addPathParams("id", checkList.id())
-            .setContentType(ContentType.JSON)
-            .build();
+        addNewCheckList();
 
         given()
             .spec(reqSpec)
             .when()
+            .pathParam("id", checkList.id())
             .delete(endpointWithId)
             .then()
             .log().all()
