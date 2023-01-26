@@ -2,25 +2,31 @@ package org.example.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 public class Config {
+    static String pathName = "src/test/resources/config.properties";
 
-    public static Properties getPropertyObject() throws IOException {
-        String path = new File("src/test/resources/config.properties").getAbsolutePath();
-        FileInputStream fp = new FileInputStream(path);
+    public static Properties getPropertyObject(String pathName) {
         Properties prop = new Properties();
-        prop.load(fp);
+        try {
+            String path = new File(pathName).getAbsolutePath();
+            FileInputStream fp = new FileInputStream(path);
+
+            prop.load(fp);
+            fp.close();
+        } catch (Exception e) {
+            System.out.println("errors in the properties");
+        }
+
         return prop;
     }
 
-    public static String getApiKeyFromProperties() throws IOException {
-        return getPropertyObject().getProperty("apiKey");
+    public static String getApiKeyFromProperties() {
+        return getPropertyObject(pathName).getProperty("apiKey");
     }
 
-    public static String getApiTokenFromProperties() throws IOException {
-        return getPropertyObject().getProperty("apiToken");
+    public static String getApiTokenFromProperties() {
+        return getPropertyObject(pathName).getProperty("apiToken");
     }
-
 }

@@ -14,28 +14,27 @@ import org.testng.annotations.BeforeClass;
 
 public class AbstractApiTest {
 
-    static final String apiKey;
-    static final String apiToken;
-    static {
-        try {
-            apiKey = getApiKeyFromProperties();
-            apiToken = getApiTokenFromProperties();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    static final String apiKey = getApiKeyFromProperties();;
+    static final String apiToken = getApiTokenFromProperties();;
+    static final String baseUri = "https://api.trello.com/1";
+
     static RequestSpecification reqSpec;
     static ResponseSpecification respSpec;
+    static ResponseSpecification negRespSpec;
 
     @BeforeClass
     public static void setup() {
         reqSpec = new RequestSpecBuilder().addQueryParam("key", apiKey)
                                           .addQueryParam("token", apiToken)
                                           .setContentType(ContentType.JSON)
+                                          .setBaseUri(baseUri)
                                           .build();
         respSpec = new ResponseSpecBuilder().expectStatusCode(200)
                                             .expectContentType(ContentType.JSON)
                                             .build();
+        negRespSpec = new ResponseSpecBuilder().expectStatusCode(404)
+                                               //.expectContentType(ContentType.JSON)
+                                               .build();
 
     }
 
