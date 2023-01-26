@@ -9,18 +9,24 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import java.io.IOException;
+import org.example.entities.BoardEntity;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 public class AbstractApiTest {
-
+    public static BoardEntity board;
     static final String apiKey = getApiKeyFromProperties();;
     static final String apiToken = getApiTokenFromProperties();;
     static final String baseUri = "https://api.trello.com/1";
+    public static String endpointBoard = "/boards";
+    public static String endpointBoardWithID = "/boards/{id}";
+    public static String expectedBoardName;
 
     static RequestSpecification reqSpec;
     static ResponseSpecification respSpec;
     static ResponseSpecification negRespSpec;
+
+
 
     @BeforeClass
     public static void setup() {

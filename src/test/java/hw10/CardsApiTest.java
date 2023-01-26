@@ -1,7 +1,5 @@
 package hw10;
 
-import static hw10.BoardApiTest.endpointBoard;
-import static hw10.BoardApiTest.endpointBoardWithID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
@@ -21,9 +19,7 @@ public class CardsApiTest extends AbstractApiTest {
     String endpointLists = "/lists";
     String endpointCards = "/cards";
     CardEntity card;
-    BoardEntity board;
     ListEntity listEntity;
-    String expectedBoardName;
     String expectedListName;
     String expectedCardName;
 
@@ -116,8 +112,6 @@ public class CardsApiTest extends AbstractApiTest {
 
     @Test
     public void getInfoAboutCard() {
-        addNewCard();
-
         card = given()
             .spec(reqSpec)
             .when().basePath(endpointCardWithId)
@@ -132,8 +126,6 @@ public class CardsApiTest extends AbstractApiTest {
 
     @Test
     public void deleteCard() {
-        addNewCard();
-
         given()
             .spec(reqSpec)
             .when().pathParam("id", card.id())
@@ -141,5 +133,15 @@ public class CardsApiTest extends AbstractApiTest {
             .then()
             .log().all()
             .spec(respSpec);
+
+        //assert 404
+        given()
+            .spec(reqSpec)
+            .when().basePath(endpointCardWithId)
+            .pathParam("id", card.id())
+            .get()
+            .then()
+            .spec(negRespSpec)
+            .log().all();
     }
 }

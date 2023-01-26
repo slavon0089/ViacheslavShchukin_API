@@ -9,10 +9,6 @@ import org.testng.annotations.Test;
 
 public class BoardApiTest extends AbstractApiTest {
 
-    public static String endpointBoard = "/boards";
-    public static String endpointBoardWithID = "/boards/{id}";
-    BoardEntity board;
-    String expectedBoardName;
     @Test(priority = 1)
     public void addNewBoard() {
         expectedBoardName = RandomStringUtils.random(50,true,true);
@@ -76,7 +72,6 @@ public class BoardApiTest extends AbstractApiTest {
             .spec(respSpec);
 
         //assert 404
-        System.out.println(board.id());
         given()
             .spec(reqSpec)
             .when().basePath(endpointBoardWithID)

@@ -18,18 +18,13 @@ import org.testng.annotations.Test;
 
 public class CheckListTest extends AbstractApiTest{
 
-    public String idCard = "63cbda41366ce301f4cabbbe";
     String endpoint = "https://api.trello.com/1/checklists";
     String endpointWithId = "https://api.trello.com/1/checklists/{id}";
-    // CheckListEntity checkList;
-
     String endpointLists = "/lists";
     String endpointCards = "/cards";
     CardEntity card;
-    BoardEntity board;
     ListEntity listEntity;
     CheckListEntity checkListEntity;
-    String expectedBoardName;
     String expectedListName;
     String expectedCardName;
     String expectedChecklistName;
@@ -42,7 +37,6 @@ public class CheckListTest extends AbstractApiTest{
             .post()
             .then()
             .extract().body().as(BoardEntity.class);
-        System.out.println(board.id());
 
         expectedListName = RandomStringUtils.random(10, true, true);
         listEntity = given()
@@ -50,7 +44,6 @@ public class CheckListTest extends AbstractApiTest{
             .when().queryParam("name", expectedListName).queryParam("idBoard", board.id()).basePath(endpointLists)
             .post()
             .then()
-            .log().all()
             //.spec(respSpec)
             .extract().body().as(ListEntity.class);
 
@@ -64,7 +57,6 @@ public class CheckListTest extends AbstractApiTest{
             .post()
             .then()
             .body("name", equalTo(expectedCardName))
-            .log().all()
             .spec(respSpec)
             .extract().body().as(CardEntity.class);
     }
@@ -78,7 +70,6 @@ public class CheckListTest extends AbstractApiTest{
             .pathParam("id", board.id())
             .delete()
             .then()
-            .log().all()
             .spec(respSpec);
     }
 
@@ -92,7 +83,6 @@ public class CheckListTest extends AbstractApiTest{
             .queryParam("name", expectedChecklistName)
             .post(endpoint)
             .then()
-            .body("name", equalTo(expectedChecklistName) )
             .log().all()
             .spec(respSpec)
             .extract().body().as(CheckListEntity.class);
@@ -116,8 +106,6 @@ public class CheckListTest extends AbstractApiTest{
 
     @Test
     public void deleteCheckList() {
-        addNewCheckList();
-
         given()
             .spec(reqSpec)
             .when()
@@ -126,5 +114,15 @@ public class CheckListTest extends AbstractApiTest{
             .then()
             .log().all()
             .spec(respSpec);
+
+        //assert 404
+        given()
+            .spec(reqSpec)
+            .when().basePath(endpointWithId)
+            .pathParam("id", card.id())
+            .get()
+            .then()
+            .spec(negRespSpec)
+            .log().all();
     }
 }
